@@ -12,7 +12,7 @@
               method="post" class="formulario" id="formulario">
 
             <div class="contenedor-inputs">
-
+ 
                 <div class="formulario__grupo" id="grupo__fecha">
                     <label for="fecha" class="formulario__label dis-block">Fecha</label>
                     <input type="date" name="fecha" id="fecha" class="formulario__input w-100 h-45-lh-45 p-0-40-0-10">
