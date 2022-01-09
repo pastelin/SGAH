@@ -21,11 +21,11 @@
 		<link rel="stylesheet" href="https://necolas.github.io/normalize.css/8.0.1/normalize.css" />
 		<link rel="stylesheet" href="${path}/resources/css/estilos.css" />
 		<link rel="stylesheet" href="${path}/resources/css/estilos-form.css" />
+		<link rel="stylesheet" href="${path}/resources/css/btn-estilos.css" />
 	</head>
 
 	<body>
 		<%@ include file="./comunes/movimientos-home/cuadro-puntos-superior.jsp" %>
-
 		<div class="contenedor">
 			<%@ include file="./comunes/movimientos-home/main.jsp" %>
 		</div>
@@ -35,6 +35,7 @@
 		<%@ include file="./popup/form-ahorro.jsp" %>
 		<%@ include file="./popup/form-gasto.jsp" %>
 		<%@ include file="./popup/form-prestamo.jsp" %>
+		<%@ include file="./popup/lista-categoria.jsp" %>
 		
 		<footer>
 			<div class="pie-pagina">
@@ -43,13 +44,12 @@
 		</footer>
 		
 		<script src="https://kit.fontawesome.com/f346ed96e5.js" crossorigin="anonymous"></script>
-		<script src="${path}/resources/js/popup.js"></script>
-<%-- 		<script src="${path}/resources/js/carrusel-totales.js"></script> --%>
-		<jsp:include page="../../resources/js/carrusel-totales.js"  />
-	
+		<script src="${path}/resources/js/comunes.js"></script>	
+		<script src="${path}/resources/js/popup.js"></script>	
 		<script>
-			const prueba = <s:property value="total" />;
-// 			console.log(prueba);
+			const descripcionTotales = "<s:property value="descripcionTotales" />";
+			const totales = <s:property value="totales" />;
 		</script>
+		<script src="${path}/resources/js/carrusel-totales.js"></script>
 	</body>
 </html>

@@ -14,6 +14,13 @@
 			</div>
 		
 			<div class="formulario__grupo">
+				<label class="formulario__label" for="asignacion">
+					<s:text name="form.asignacionAhorro" />
+				</label>
+				<s:select cssClass="formulario__select" name="movimiento.idCatCategoria" list="catFormGastos" />
+			</div>
+			
+			<div class="formulario__grupo">
 				<label class="formulario__label" for="monto">
 					<s:text name="form.monto" />	
 				</label> 
@@ -28,8 +35,6 @@
 				</label>
 				<s:textarea cssClass="formulario__textarea" name="movimiento.descripcion" id="descripcion"/>
 			</div>
-	
-			<s:textfield type="hidden" name="movimiento.asignacion" value="spend" />
 	
 			<div class="formulario__grupo-btn-enviar">
 				<s:submit type="button" cssClass="formulario__btn-enviar" key="btn.enviar"/>

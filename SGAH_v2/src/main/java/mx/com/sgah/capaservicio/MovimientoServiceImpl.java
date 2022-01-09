@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import mx.com.sgah.capadatos.MovimientoDaoI;
+import mx.com.sgah.capadatos.domain.Categoria;
 import mx.com.sgah.capadatos.domain.Movimiento;
 
 @Service("movimientoServiceI")
@@ -41,6 +42,16 @@ public class MovimientoServiceImpl implements MovimientoServiceI {
 	@Override
 	public Movimiento encontrarPorId(Movimiento movimiento) {
 		return movimientoDao.findMovimientoById(movimiento);
+	}
+
+	@Override
+	public List<Categoria> listarGategoria() {
+		return movimientoDao.findAllCategoria();
+	}
+
+	@Override
+	public Double obtenerSumaGastoMensual(String fecha) {
+		return movimientoDao.getSumaGastoMensual(fecha);
 	}
 
 }

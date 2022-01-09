@@ -1,5 +1,7 @@
 package mx.com.sgah.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,106 +12,135 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.opensymphony.xwork2.ActionSupport;
 
+import mx.com.sgah.capadatos.domain.Categoria;
 import mx.com.sgah.capadatos.domain.Movimiento;
 import mx.com.sgah.capaservicio.MovimientoServiceI;
+import mx.com.sgah.enumerado.movimiento.CatCategoria;
+import mx.com.sgah.enumerado.movimiento.TipoMovimiento;
 import mx.com.sgah.utileria.Fecha;
 
 public class MovimientoAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
-	private static final String ASIGNACION_SPEND = "spend";
-	private static final String ASIGNACION_BORROW = "borrow";
-	private static final String ASIGNACION_KEEP = "keep";
-	private static final String ASIGNACION_FREE = "free";
-	
+
 	private List<Movimiento> listaMovimientos;
+	private List<Movimiento> listaMovimientosPorCategoria;
+	private List<Categoria> listaCategorias;
+	private List<Float> totales;
+	private Map<String, String> catFormAhorro;
+	private Map<String, String> catFormGastos;
+
 	private float totalSpend;
 	private float totalBorrow;
 	private float totalFree;
 	private float totalKeep;
 	private float total;
 	private float montoAnterior;
+	private Double sumaGastoMensual;
+
 	private Movimiento movimiento;
-	private List<String> categorias;
-	private Map<String, String> asignaciones;
-	
+	private String descripcionTotales;
+	private int idCategoria;
+
+	private boolean formUpdateActive;
 
 	@Autowired
 	MovimientoServiceI movimientoService;
-	
-	@Action(value="/mostrarDatos", results= {
-			@Result(name="success", location="/WEB-INF/content/movimientos.jsp")})
-	public String initExecute() {
-		listaMovimientos = this.movimientoService.listarMovimiento();
-		String asignacion = "";
-		Map<String, String> asignaciones = new HashMap<>();
-		
-		for(Movimiento objMovimiento : listaMovimientos) {
-			asignacion = objMovimiento.getAsignacion();
 
-			if( (ASIGNACION_KEEP).equals(asignacion) ) {
-				this.totalKeep += objMovimiento.getMonto();
-			} else if( (ASIGNACION_FREE).equals(asignacion) ) {
-				this.totalFree += objMovimiento.getMonto();
-			} else if( (ASIGNACION_BORROW).equals(asignacion) ) {
-				this.totalBorrow += objMovimiento.getMonto();
-			} else if( (ASIGNACION_SPEND).equals(asignacion) ) {
-				this.totalSpend += convertirMontoPositivo(objMovimiento.getMonto());
-			}
-		}
-		
-		calcularTotales();
-		asignaciones.put("", "Seleccione una opción");
-		asignaciones.put("keep", "Keep");
-		asignaciones.put("free", "Free");
-		this.setAsignaciones(asignaciones);
-		
+	@Action(value = "/mostrarDatos", results = {
+			@Result(name = "success", location = "/WEB-INF/content/movimientos.jsp") })
+	public String initExecute() {
+		getMovimientosTotales();
+		inicializaListas();
 		return "success";
 	}
-
-	@Action(value="/agregarMovimiento", results= {
-			@Result(name="agregadoExitoso", location="mostrarDatos",  type="redirectAction")})
+	
+	@Action(value = "/agregarMovimiento", results = {
+			@Result(name = "agregadoExitoso", location = "mostrarDatos", type = "redirectAction") })
 	public String agregarMovimiento() {
-		if(this.movimiento.getTipoMovimiento() == null) {
-			if(this.movimiento.getAsignacion().equals("keep") || this.movimiento.getAsignacion().equals("free")) {
-				this.movimiento.setTipoMovimiento("ahorro");
-			} else {			
-				this.movimiento.setTipoMovimiento("gasto");
-			}			
+		if (this.movimiento.getIdCatTipoMovimiento() == null) {
+			if (this.movimiento.getIdCatCategoria() == 4 || this.movimiento.getIdCatCategoria() == 2) {
+				this.movimiento.setIdCatTipoMovimiento(TipoMovimiento.AHORRO.getId());
+			} else {
+				this.movimiento.setIdCatTipoMovimiento(TipoMovimiento.GASTO.getId());
+			}
 		}
-		
-		this.movimiento.setFecha(Fecha.getCurrentDate());	
+		this.movimiento.setFecha(Fecha.getCurrentDate());
 		this.movimientoService.agregarMovimiento(this.movimiento);
 		return "agregadoExitoso";
 	}
-	
-	@Action(value="modificarMovimiento", results= {
-			@Result(name="modificadoExitoso", location="mostrarDatos", type="redirectAction")})
+
+	@Action(value = "modificarMovimiento", results = {
+			@Result(name = "modificadoExitoso", location = "/WEB-INF/content/lista-movimientos.jsp") })
 	public String modificarMovimiento() {
-		Movimiento objMovimiento = new Movimiento(movimiento.getFecha(), movimiento.getMonto(), movimiento.getDescripcion(), "ahorro", "free");
 		float montoNuevo = montoAnterior - movimiento.getMonto();
 		this.movimiento.setMonto(montoNuevo);
-		
 		this.movimientoService.actualizarMovimiento(this.movimiento);
-		
-		this.movimientoService.agregarMovimiento(objMovimiento);
- 
+		getMovimientosPorCategoria();
 		return "modificadoExitoso";
 	}
-	
-	@Action(value="bucarMovimiento", results= {
-			@Result(name="busquedaExitos", location="mostrarDatos", type="redirectAction")})
+
+	@Action(value = "bucarMovimiento", results = {
+			@Result(name = "busquedaPorIdExitosa", location = "/WEB-INF/content/lista-movimientos.jsp") })
 	public String buscarMovimientoPorId() {
-		this.movimientoService.encontrarPorId(movimiento);
-		
+		this.movimiento = this.movimientoService.encontrarPorId(movimiento);
+		this.montoAnterior = this.movimiento.getMonto();
+		this.formUpdateActive = true;
+		getMovimientosPorCategoria();
+		getMovimientosTotales();
+		return "busquedaPorIdExitosa";
+	}
+
+	@Action(value = "buscarPorCategoria", results = {
+			@Result(name = "busquedaExitosa", location = "/WEB-INF/content/lista-movimientos.jsp") })
+	public String buscarPorCategoria() {
+		getMovimientosPorCategoria();
 		return "busquedaExitosa";
 	}
 	
+	private void getMovimientosPorCategoria() {
+		this.listaMovimientosPorCategoria = new ArrayList<>();
+
+		if (this.listaMovimientos == null) {
+			this.listaMovimientos = this.movimientoService.listarMovimiento();
+		}
+
+		if (idCategoria == CatCategoria.TODOS.getId()) {
+			this.listaMovimientosPorCategoria = this.listaMovimientos;
+		} else {
+			for (Movimiento mov : this.listaMovimientos) {
+				if (mov.getIdCatCategoria() == idCategoria && mov.getMonto() != 0) {
+					this.listaMovimientosPorCategoria.add(mov);
+				}
+			}
+		}
+	}
 	
+	private void getMovimientosTotales() {
+		listaMovimientos = this.movimientoService.listarMovimiento();
+		int categoria = 0;
+
+		for (Movimiento objMovimiento : listaMovimientos) {
+			categoria = objMovimiento.getIdCatCategoria();
+
+			if (categoria == CatCategoria.KEEP.getId()) {
+				this.totalKeep += objMovimiento.getMonto();
+			} else if (categoria == CatCategoria.FREE.getId()) {
+				this.totalFree += objMovimiento.getMonto();
+			} else if (categoria == CatCategoria.BORROW.getId()) {
+				this.totalBorrow += objMovimiento.getMonto();
+			} else if (categoria != CatCategoria.KEEP.getId() && categoria != CatCategoria.SELECCIONAR_OPCION.getId()
+					&& categoria != CatCategoria.BORROW.getId() && categoria != CatCategoria.OTROS.getId()) {
+				this.totalSpend += convertirMontoPositivo(objMovimiento.getMonto());
+			}
+		}
+		calcularTotales();
+	}
+
 	private float convertirMontoPositivo(float monto) {
 		float nuevoMonto = monto;
 		float operandoNegativo = -1.0f;
-		
+
 		if (monto < 0) {
 			nuevoMonto = operandoNegativo * monto;
 		}
@@ -120,14 +151,76 @@ public class MovimientoAction extends ActionSupport {
 		this.totalKeep = this.totalKeep - this.totalBorrow;
 		this.totalFree = this.totalFree + this.totalBorrow - this.totalSpend;
 		this.total = this.totalFree + this.totalKeep;
+
+		this.totales = Arrays.asList(this.totalKeep, this.totalFree, this.totalBorrow);
+	}
+
+	public void inicializaListas() {
+		iniciarListaDescripcionTotales();
+		iniciarListaCatFormAhorro();
+		iniciarListaCatFormGastos();
+		obtenerSumaGastoMensual();
+	}
+
+	private void iniciarListaDescripcionTotales() {
+		this.descripcionTotales = "Total ahorrado, Total libre para gastos, Total de prestamos por pagar";
+	}
+
+	private void iniciarListaCatFormAhorro() {
+		catFormAhorro = new HashMap<>();
+		if (this.listaCategorias == null || this.listaCategorias.isEmpty()) {
+			this.listaCategorias = movimientoService.listarGategoria();
+		}
+		for (int i = 0; i < this.listaCategorias.size(); i++) {
+
+			if (this.listaCategorias.get(i).getIdCatCategoria() == CatCategoria.FREE.getId()
+					|| this.listaCategorias.get(i).getIdCatCategoria() == CatCategoria.KEEP.getId()
+					|| this.listaCategorias.get(i).getIdCatCategoria() == CatCategoria.SELECCIONAR_OPCION.getId()) {
+
+				catFormAhorro.put(this.listaCategorias.get(i).getIdCatCategoria().toString(),
+						this.listaCategorias.get(i).getNombre());
+			}
+		}
+		this.setCatFormAhorro(catFormAhorro);
+	}
+
+	private void iniciarListaCatFormGastos() {
+		catFormGastos = new HashMap<>();
+		
+		if (this.listaCategorias == null || this.listaCategorias.isEmpty()) {
+			this.listaCategorias = movimientoService.listarGategoria();
+		}
+		for (int i = 0; i < this.listaCategorias.size(); i++) {
+			int id = this.listaCategorias.get(i).getIdCatCategoria();
+			if (id != CatCategoria.FREE.getId() && id != CatCategoria.KEEP.getId() && id != CatCategoria.BORROW.getId()
+					&& id != CatCategoria.SPEND.getId() && id != CatCategoria.OTROS.getId()
+					&& id != CatCategoria.TODOS.getId()) {
+
+				catFormGastos.put(this.listaCategorias.get(i).getIdCatCategoria().toString(),
+						this.listaCategorias.get(i).getNombre());
+			}
+		}
+		this.setCatFormGastos(catFormGastos);
 	}
 	
+	private void obtenerSumaGastoMensual() {
+		this.sumaGastoMensual = movimientoService.obtenerSumaGastoMensual(Fecha.getCurrenDateYMD());
+	}
+
 	public List<Movimiento> getListaMovimientos() {
 		return listaMovimientos;
 	}
 
 	public void setListaMovimientos(List<Movimiento> listaMovimientos) {
 		this.listaMovimientos = listaMovimientos;
+	}
+
+	public List<Categoria> getListaCategorias() {
+		return listaCategorias;
+	}
+
+	public void setListaCategorias(List<Categoria> listaCategorias) {
+		this.listaCategorias = listaCategorias;
 	}
 
 	public float getTotalSpend() {
@@ -186,19 +279,68 @@ public class MovimientoAction extends ActionSupport {
 		this.montoAnterior = montoAnterior;
 	}
 
-	public List<String> getCategorias() {
-		return categorias;
+	public Map<String, String> getCatFormAhorro() {
+		return catFormAhorro;
 	}
 
-	public void setCategorias(List<String> categorias) {
-		this.categorias = categorias;
+	public void setCatFormAhorro(Map<String, String> catFormAhorro) {
+		this.catFormAhorro = catFormAhorro;
 	}
 
-	public Map<String, String> getAsignaciones() {
-		return asignaciones;
+	public Map<String, String> getCatFormGastos() {
+		return catFormGastos;
 	}
 
-	public void setAsignaciones(Map<String, String> asignaciones) {
-		this.asignaciones = asignaciones;
-	}	
+	public void setCatFormGastos(Map<String, String> catFormGastos) {
+		this.catFormGastos = catFormGastos;
+	}
+
+	public List<Float> getTotales() {
+		return totales;
+	}
+
+	public void setTotales(List<Float> totales) {
+		this.totales = totales;
+	}
+
+	public String getDescripcionTotales() {
+		return descripcionTotales;
+	}
+
+	public void setDescripcionTotales(String descripcionTotales) {
+		this.descripcionTotales = descripcionTotales;
+	}
+
+	public int getIdCategoria() {
+		return idCategoria;
+	}
+
+	public void setIdCategoria(int idCategoria) {
+		this.idCategoria = idCategoria;
+	}
+
+	public List<Movimiento> getListaMovimientosPorCategoria() {
+		return listaMovimientosPorCategoria;
+	}
+
+	public void setListaMovimientosPorCategoria(List<Movimiento> listaMovimientosPorCategoria) {
+		this.listaMovimientosPorCategoria = listaMovimientosPorCategoria;
+	}
+
+	public boolean isFormUpdateActive() {
+		return formUpdateActive;
+	}
+
+	public void setFormUpdateActive(boolean formUpdateActive) {
+		this.formUpdateActive = formUpdateActive;
+	}
+
+	public Double getSumaGastoMensual() {
+		return sumaGastoMensual;
+	}
+
+	public void setSumaGastoMensual(Double sumaGastoMensual) {
+		this.sumaGastoMensual = sumaGastoMensual;
+	}
+	
 }

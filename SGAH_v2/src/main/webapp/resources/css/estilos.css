@@ -50,19 +50,6 @@ header .menu {
 	gap: 30px;
 }
 
-header .menu a {
-	text-decoration: none;
-	display: inline;
-	height: 40px;
-	line-height: 40px;
-	background: rgba(0, 0, 0, 0.5);
-	padding: 0 20px;
-	text-align: center;
-	color: #fff;
-	font-weight: 600;
-	border-radius: 5px;
-}
-
 header h1 {
 	color: rgba(0, 0, 0, 0.5);
 	font-size: 40px;
@@ -73,23 +60,21 @@ header h1 {
 
 .main .contenedor-categoria-fecha {
 	display: flex;
-	justify-content: space-between;
+	justify-content: end;
 }
 
-.main .contenedor-categoria-fecha .fecha,
-.main .contenedor-categoria-fecha .categoria {
-	height: 40px;
+.main .contenedor-categoria-fecha .fecha {
+	height: 45px;
 	padding: 0 20px;
-	background: #e8eff1;
-	line-height: 40px;
-	border-radius: 5px;
+	line-height: 45px;
+	border-bottom: 2px solid #000;
 }
-.main .contenedor-categoria-fecha .fecha p,
-.main .contenedor-categoria-fecha .categoria {
+.main .contenedor-categoria-fecha .fecha p {
 	text-align: center;
 	font-size: 18px;
 	font-weight: 400;
 	font-family: 'Work Sans';
+	color: #00000088;
 }
 
 .main .categoria-fecha .contenedor-interno {
@@ -98,13 +83,16 @@ header h1 {
 
 /* Estilos para descripcion y total */
 
+hr {
+	margin-top: 40px;
+}
+
 .main .descripcion h1,
 .main .total p {
 	font-size: 40px;
 	font-weight: 400;
 	color: rgba(0, 0, 0, 0.25);
 	text-align: center;
-	margin-bottom: 40px;
 }
 
 .main .total p {
@@ -123,25 +111,6 @@ header h1 {
 .main .btn-opciones nav {
 	display: flex;
 	justify-content: space-between;
-	margin: 0 40px;
-}
-.main .btn-opciones nav button {
-	display: inline-block;
-	height: 50px;
-	line-height: 50px;
-	padding-left: 20px;
-	color: #fff;
-	background: rgba(91, 105, 226, 0.75);
-	text-align: center;
-	border-radius: 5px;
-	text-decoration: none;
-	font-weight: 600;
-	border: none;
-}
-
-.main .btn-opciones nav button em {
-	padding: 0 20px;
-	line-height: 50px;
 }
 
 .main .gastos-mes .contenedor-gastos-mes {
@@ -149,7 +118,7 @@ header h1 {
 	justify-content: space-between;
 	padding: 0 40px;
 	height: 60px;
-	background: rgba(67, 168, 84, 0.6);
+	background: #384d54;
 	line-height: 60px;
 	font-weight: 600;
 	color: #fff;
@@ -204,4 +173,32 @@ footer .pie-pagina h1 {
 	font-size: 20px;
 	font-weight: 900;
 	text-align: center;
+}
+
+/* Estilos para el carrusel de totales */
+.centrar-elementos-total {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.centrar-elementos-total .btn-left {
+	padding-left: 50px;
+}
+
+.centrar-elementos-total .btn-right {
+	padding-right: 50px;
+}
+
+.centrar-elementos-total .btn-left i,
+.centrar-elementos-total .btn-right i {
+	font-size: 30px;
+	opacity: 0.5;
+	transition: all 0.5s ease-in-out;
+	cursor: pointer;
+}
+
+.centrar-elementos-total .btn-left i:hover,
+.centrar-elementos-total .btn-right i:hover {
+	opacity: 1;
 }

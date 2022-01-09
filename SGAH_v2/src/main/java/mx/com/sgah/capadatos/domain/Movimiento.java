@@ -23,11 +23,12 @@ public class Movimiento {
 	private Float monto;
 	
 	private String descripcion; 
+		
+	@Column(name="id_cat_tipo")
+	private Integer idCatTipoMovimiento;
 	
-	@Column(name = "tipo_movimiento")
-	private String tipoMovimiento;
-	
-	private String asignacion;
+	@Column(name="id_cat_categoria")
+	private Integer idCatCategoria;
 	
 	public Movimiento() {
 		
@@ -37,22 +38,21 @@ public class Movimiento {
 		this.idMovimiento = idMovimiento;
 	}
 
-	public Movimiento(String fecha, Float monto, String descripcion, String tipoMovimiento, String asignacion) {
+	public Movimiento(String fecha, Float monto, String descripcion, String asignacion, Integer idCatTipoMovimiento, Integer idCatCategoria) {
 		this.fecha = fecha;
 		this.monto = monto;
 		this.descripcion = descripcion;
-		this.tipoMovimiento = tipoMovimiento;
-		this.asignacion = asignacion;
+		this.idCatTipoMovimiento = idCatTipoMovimiento;
+		this.idCatCategoria = idCatCategoria;
 	}
 
-	public Movimiento(Long idMovimiento, String fecha, Float monto, String descripcion, String tipoMovimiento,
-			String asignacion) {
+	public Movimiento(Long idMovimiento, String fecha, Float monto, String descripcion, String asignacion, Integer idCatTipoMovimiento, Integer idCatCategoria) {
 		this.idMovimiento = idMovimiento;
 		this.fecha = fecha;
 		this.monto = monto;
 		this.descripcion = descripcion;
-		this.tipoMovimiento = tipoMovimiento;
-		this.asignacion = asignacion;
+		this.idCatTipoMovimiento = idCatTipoMovimiento;
+		this.idCatCategoria = idCatCategoria;
 	}
 
 	public Long getIdMovimiento() {
@@ -87,26 +87,27 @@ public class Movimiento {
 		this.descripcion = descripcion;
 	}
 
-	public String getTipoMovimiento() {
-		return tipoMovimiento;
+	public Integer getIdCatTipoMovimiento() {
+		return idCatTipoMovimiento;
 	}
 
-	public void setTipoMovimiento(String tipoMovimiento) {
-		this.tipoMovimiento = tipoMovimiento;
+	public void setIdCatTipoMovimiento(Integer idCatTipoMovimiento) {
+		this.idCatTipoMovimiento = idCatTipoMovimiento;
 	}
 
-	public String getAsignacion() {
-		return asignacion;
+	public Integer getIdCatCategoria() {
+		return idCatCategoria;
 	}
 
-	public void setAsignacion(String asignacion) {
-		this.asignacion = asignacion;
+	public void setIdCatCategoria(Integer idCatCategoria) {
+		this.idCatCategoria = idCatCategoria;
 	}
 
 	@Override
 	public String toString() {
 		return "Movimiento [idMovimiento=" + idMovimiento + ", fecha=" + fecha + ", monto=" + monto + ", descripcion="
-				+ descripcion + ", tipoMovimiento=" + tipoMovimiento + ", asignacion=" + asignacion + "]";
+				+ descripcion + ", idCatTipoMovimiento=" + idCatTipoMovimiento
+				+ ", idCatCategoria=" + idCatCategoria + "]";
 	}
 
 	@Override

@@ -9,7 +9,7 @@
 				<label class="formulario__label" for="asignacion">
 					<s:text name="form.asignacionAhorro" />
 				</label>
-				<s:select cssClass="formulario__select" name="movimiento.asignacion" id="asignacion" list="asignaciones" />
+				<s:select cssClass="formulario__select" name="movimiento.idCatCategoria" list="catFormAhorro" />
 			</div>
 
 			<div class="formulario__grupo">

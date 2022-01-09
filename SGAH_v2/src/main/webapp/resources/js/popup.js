@@ -1,24 +1,30 @@
-// constantes para almacenar la referencia de los botones
-const btnAddAhorro = document.getElementById('addAhorro');
-const btnAddGasto = document.getElementById('addGasto');
-const btnAddPrestamo = document.getElementById('addPrestamo');
+// Referencia del html
+const btnAddAhorro 		= document.querySelector('#addAhorro');
+const btnAddGasto	 		= document.querySelector('#addGasto');
+const btnAddPrestamo 	= document.querySelector('#addPrestamo');
+const btnCategoria 		= document.querySelector('#btnCategoria');
 
-// constantes para almacenar la referencia para el cierre del popup
-const btnCerrarPopupAhorro = document.getElementById('btn-cerrar-popup-ahorro');
-const btnCerrarPopupGasto = document.getElementById('btn-cerrar-popup-gasto');
-const btnCerrarPopupPrestamo = document.getElementById('btn-cerrar-popup-prestamo');
+const btnCerrarPopupAhorro = document.querySelector('#btn-cerrar-popup-ahorro');
+const btnCerrarPopupGasto = document.querySelector('#btn-cerrar-popup-gasto');
+const btnCerrarPopupPrestamo = document.querySelector('#btn-cerrar-popup-prestamo');
+const btnCerrarPopupCategoria = document.querySelector('#btn-cerrar-popup-categoria');
 
-// constantes para almacenar la referencia de los contenedores a mostrar mediante overlay y popup
 
 // ahorro
-const overlayAhorro = document.getElementById('overlay-ahorro');
-const popupAhorro = document.getElementById('popup-ahorro');
+const overlayAhorro = document.querySelector('#overlay-ahorro');
+const popupAhorro = document.querySelector('#popup-ahorro');
+
 // gastos
-const overlayGasto = document.getElementById('overlay-gasto');
-const popupGasto = document.getElementById('popup-gasto');
+const overlayGasto = document.querySelector('#overlay-gasto');
+const popupGasto = document.querySelector('#popup-gasto');
+
 // prestamos
-const overlayPrestamo = document.getElementById('overlay-prestamo');
-const popupPrestamo = document.getElementById('popup-prestamo');
+const overlayPrestamo = document.querySelector('#overlay-prestamo');
+const popupPrestamo = document.querySelector('#popup-prestamo');
+
+// categorias
+const overlayCategoria = document.querySelector('#overlay-categoria');
+const popupCategoria = document.querySelector('#popup-categoria');
 
 // eventos para ahorro
 btnAddAhorro.addEventListener('click', () => {
@@ -39,7 +45,6 @@ btnCerrarPopupGasto.addEventListener('click', () => {
 });
 
 // eventos para prestamos
-
 btnAddPrestamo.addEventListener('click', () => {
 	_addClassActive(overlayPrestamo, popupPrestamo);
 });
@@ -48,12 +53,21 @@ btnCerrarPopupPrestamo.addEventListener('click', () => {
 	_removeClassActive(overlayPrestamo, popupPrestamo);
 });
 
-const _addClassActive = (overlay, popup) => {
-	overlay.classList.add('active');
-	popup.classList.add('active');
-};
+// eventos para las categorias
+btnCategoria.addEventListener('click', () => {
+	_addClassActive(overlayCategoria, popupCategoria);
+});
 
-const _removeClassActive = (overlay, popup) => {
-	overlay.classList.remove('active');
-	popup.classList.remove('active');
-};
+btnCerrarPopupCategoria.addEventListener('click', () => {
+	_removeClassActive(overlayCategoria, popupCategoria);
+});
+
+// const _addClassActive = (overlay, popup) => {
+// 	overlay.classList.add('active');
+// 	popup.classList.add('active');
+// };
+
+// const _removeClassActive = (overlay, popup) => {
+// 	overlay.classList.remove('active');
+// 	popup.classList.remove('active');
+// };

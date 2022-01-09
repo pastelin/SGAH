@@ -29,7 +29,7 @@
 				<s:textarea cssClass="formulario__textarea" name="movimiento.descripcion" id="descripcion"/>
 			</div>
 	
-			<s:textfield type="hidden" name="movimiento.asignacion" value="borrow" />
+			<s:textfield type="hidden" name="movimiento.idCatCategoria" value="5" />
 	
 			<div class="formulario__grupo-btn-enviar">
 				<s:submit type="button" cssClass="formulario__btn-enviar" key="btn.enviar"/>
