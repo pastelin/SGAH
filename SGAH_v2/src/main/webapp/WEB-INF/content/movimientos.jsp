@@ -22,6 +22,8 @@
 		<link rel="stylesheet" href="${path}/resources/css/estilos.css" />
 		<link rel="stylesheet" href="${path}/resources/css/estilos-form.css" />
 		<link rel="stylesheet" href="${path}/resources/css/btn-estilos.css" />
+
+		<script src="https://kit.fontawesome.com/f346ed96e5.js" crossorigin="anonymous"></script>
 	</head>
 
 	<body>
@@ -43,7 +45,7 @@
 			</div>
 		</footer>
 		
-		<script src="https://kit.fontawesome.com/f346ed96e5.js" crossorigin="anonymous"></script>
+		
 		<script src="${path}/resources/js/comunes.js"></script>	
 		<script src="${path}/resources/js/popup.js"></script>	
 		<script>

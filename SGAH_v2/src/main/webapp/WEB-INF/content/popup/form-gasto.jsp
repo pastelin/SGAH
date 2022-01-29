@@ -5,11 +5,14 @@
 		</a>
 		<h1><s:text name="form.tituloGasto" /></h1>
 		
-		<form action="agregarMovimiento" method="post" class="formulario">
+		<form action="agregarMovimiento" method="post" 
+			class="formulario">
 			<div class="formulario__grupo">
 				<label class="formulario__label msg__warning" for="monto">
 					<s:text name="form.msgGasto" /> &nbsp;
-					<fmt:formatNumber value="${totalFree}" type="currency" />
+					<span id="montoTotal">
+						<fmt:formatNumber value="${totalFree}" type="currency" />
+					</span>
 				</label>	
 			</div>
 		
