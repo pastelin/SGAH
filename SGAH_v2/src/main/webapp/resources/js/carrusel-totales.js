@@ -1,4 +1,4 @@
-(function () {
+(function() {
 	let contador = 0;
 	let banderaSiguiente = false;
 	let banderaAnterior = false;

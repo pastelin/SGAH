@@ -50,13 +50,15 @@ public class MovimientoAction extends ActionSupport {
 	@Action(value = "/mostrarDatos", results = {
 			@Result(name = "success", location = "/WEB-INF/content/movimientos.jsp") })
 	public String initExecute() {
-		getMovimientosTotales();
+		obtenerTotales();
 		inicializaListas();
 		return "success";
 	}
 	
 	@Action(value = "/agregarMovimiento", results = {
-			@Result(name = "agregadoExitoso", location = "mostrarDatos", type = "redirectAction") })
+			@Result(name = "agregadoExitoso", location = "mostrarDatos", type = "redirectAction"),
+			@Result(name = "input", location="/WEB-INF/content/popup/form-ahorro.jsp")
+			})
 	public String agregarMovimiento() {
 		if (this.movimiento.getIdCatTipoMovimiento() == null) {
 			if (this.movimiento.getIdCatCategoria() == 4 || this.movimiento.getIdCatCategoria() == 2) {
@@ -76,7 +78,7 @@ public class MovimientoAction extends ActionSupport {
 		float montoNuevo = montoAnterior - movimiento.getMonto();
 		this.movimiento.setMonto(montoNuevo);
 		this.movimientoService.actualizarMovimiento(this.movimiento);
-		getMovimientosPorCategoria();
+		obtenerMovimientosPorCategoria();
 		return "modificadoExitoso";
 	}
 
@@ -86,19 +88,19 @@ public class MovimientoAction extends ActionSupport {
 		this.movimiento = this.movimientoService.encontrarPorId(movimiento);
 		this.montoAnterior = this.movimiento.getMonto();
 		this.formUpdateActive = true;
-		getMovimientosPorCategoria();
-		getMovimientosTotales();
+		obtenerMovimientosPorCategoria();
+		obtenerTotales();
 		return "busquedaPorIdExitosa";
 	}
 
 	@Action(value = "buscarPorCategoria", results = {
 			@Result(name = "busquedaExitosa", location = "/WEB-INF/content/lista-movimientos.jsp") })
 	public String buscarPorCategoria() {
-		getMovimientosPorCategoria();
+		obtenerMovimientosPorCategoria();
 		return "busquedaExitosa";
 	}
 	
-	private void getMovimientosPorCategoria() {
+	private void obtenerMovimientosPorCategoria() {
 		this.listaMovimientosPorCategoria = new ArrayList<>();
 
 		if (this.listaMovimientos == null) {
@@ -116,7 +118,7 @@ public class MovimientoAction extends ActionSupport {
 		}
 	}
 	
-	private void getMovimientosTotales() {
+	private void obtenerTotales() {
 		listaMovimientos = this.movimientoService.listarMovimiento();
 		int categoria = 0;
 
@@ -156,35 +158,24 @@ public class MovimientoAction extends ActionSupport {
 	}
 
 	public void inicializaListas() {
-		iniciarListaDescripcionTotales();
-		iniciarListaCatFormAhorro();
-		iniciarListaCatFormGastos();
-		obtenerSumaGastoMensual();
+		obtenerDescripcionTotales();
+		obtenerOpcionesAhorro();
+		obtenerOpcionesGasto();
+		obtenerGastoMensual();
 	}
 
-	private void iniciarListaDescripcionTotales() {
+	private void obtenerDescripcionTotales() {
 		this.descripcionTotales = "Total ahorrado, Total libre para gastos, Total de prestamos por pagar";
 	}
 
-	private void iniciarListaCatFormAhorro() {
-		catFormAhorro = new HashMap<>();
-		if (this.listaCategorias == null || this.listaCategorias.isEmpty()) {
-			this.listaCategorias = movimientoService.listarGategoria();
-		}
-		for (int i = 0; i < this.listaCategorias.size(); i++) {
-
-			if (this.listaCategorias.get(i).getIdCatCategoria() == CatCategoria.FREE.getId()
-					|| this.listaCategorias.get(i).getIdCatCategoria() == CatCategoria.KEEP.getId()
-					|| this.listaCategorias.get(i).getIdCatCategoria() == CatCategoria.SELECCIONAR_OPCION.getId()) {
-
-				catFormAhorro.put(this.listaCategorias.get(i).getIdCatCategoria().toString(),
-						this.listaCategorias.get(i).getNombre());
-			}
-		}
-		this.setCatFormAhorro(catFormAhorro);
+	private void obtenerOpcionesAhorro() {
+		this.catFormAhorro = new HashMap<>();
+		this.catFormAhorro.put("1", "Seleccionar una opción");
+		this.catFormAhorro.put("2", "Free");
+		this.catFormAhorro.put("4", "keep");
 	}
 
-	private void iniciarListaCatFormGastos() {
+	private void obtenerOpcionesGasto() {
 		catFormGastos = new HashMap<>();
 		
 		if (this.listaCategorias == null || this.listaCategorias.isEmpty()) {
@@ -203,9 +194,25 @@ public class MovimientoAction extends ActionSupport {
 		this.setCatFormGastos(catFormGastos);
 	}
 	
-	private void obtenerSumaGastoMensual() {
+	private void obtenerGastoMensual() {
 		this.sumaGastoMensual = movimientoService.obtenerSumaGastoMensual(Fecha.getCurrenDateYMD());
 	}
+	
+	public void validate() {
+		
+		validateCategoria(movimiento.getIdCatCategoria());
+		
+		
+	}
+	
+	public void validateCategoria(Integer categoria) {
+		
+		if(categoria == null || categoria == 1) {
+			addFieldError("movimiento.idCatCategoria", "Indique una categoría válida");
+		}
+		
+	}
+	
 
 	public List<Movimiento> getListaMovimientos() {
 		return listaMovimientos;

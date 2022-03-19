@@ -10,6 +10,7 @@
 					<s:text name="form.asignacionAhorro" />
 				</label>
 				<s:select cssClass="formulario__select" name="movimiento.idCatCategoria" list="catFormAhorro" />
+				<s:fielderror fieldname="movimiento.idCatCategoria" />
 			</div>
 
 			<div class="formulario__grupo">
