@@ -198,12 +198,12 @@ public class MovimientoAction extends ActionSupport {
 		this.sumaGastoMensual = movimientoService.obtenerSumaGastoMensual(Fecha.getCurrenDateYMD());
 	}
 	
-	public void validate() {
-		
-		validateCategoria(movimiento.getIdCatCategoria());
-		
-		
-	}
+//	public void validate() {
+//		
+//		validateCategoria(movimiento.getIdCatCategoria());
+//		
+//		
+//	}
 	
 	public void validateCategoria(Integer categoria) {
 		
